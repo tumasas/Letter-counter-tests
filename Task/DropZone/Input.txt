@@ -1,0 +1,4 @@
+This type of iterator manage the iteration in the background and leaves the programmer
+to just code what is meant to be done with the elements of the collection, rather than managing 
+the iteration and making sure that all the elements are processed one-by-one.
+Lets see an example of an internal iterator:

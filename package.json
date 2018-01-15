@@ -1,0 +1,22 @@
+{
+  "name": "Letter counter tests",
+  "version": "0.1.0",
+  "description": "Letter counter tests",
+  "main": "hello-world-server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1",
+    "cypress:open": "cypress open"
+  },
+  "repository": "",
+  "keywords": [
+    "node.js",
+    "eclipse",
+    "nodeclipse"
+  ],
+  "author": "",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "cypress": "^1.4.1"
+  }
+}

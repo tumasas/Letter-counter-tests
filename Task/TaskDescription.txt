@@ -1,0 +1,27 @@
+Basic description: 
+We have a black box program (black_box.jar) which takes file as an input from the drop zone folder and processes it.
+The result of the black box program is the CSV file saved in the location specified through arguments.
+CSV file contains a count of each character found in the input file.
+To run black_box.jar: java -jar black_box.jar "path/To/Input.txt" "path/To/UI/server/CSVs/dir"
+
+We also have a UI server that takes results file and visualizes it as a bar chart.
+To run nodejs server use this command in dir containing server js: "node server.js"
+
+Goals:
+1. Verify data flow.
+You need to create automated E2E test to ensure both (blackbox and UI) programs work and the end result (a chart) can be generated and displayed.
+
+2. Verify data integrity.
+Check at least a couple of data points in the chart to be sure results are correct. For example, make sure that with a given input file the char 'r' has a count of 16.
+
+Have above mentioned verifications run in automated manner.
+You can choose how to report test results - a text file is ok.
+What we require to be reported?
+1. Overall state of the system - red or green
+2. Details of what failed IF failed
+
+
+Prerequisites:
+Java 8 or higher
+Node JS
+Windows
