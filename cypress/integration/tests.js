@@ -26,7 +26,7 @@ describe(
 			
 			it('Verifies if chart displays blackbox program\'s results', function() {
 				cy.get('div[id*=\'google-visualization-errors\']').should('not.exist')
-				cy.get('#chart_div g[clip-path] rect[fill = \'#3366cc\']').should('have.length', blackboxResults.length);
+				cy.get('#chart_div g[clip-path] g + g:nth-child(2) rect').should('have.length', blackboxResults.length);
 			})
 			
 			it('Verifies if chart displays random letter\'s count', function() {
@@ -50,7 +50,7 @@ describe(
 	                        }
 	                    }
 
-						cy.get('#chart_div g[clip-path] rect[fill = \'#3366cc\']').eq(index)
+						cy.get('#chart_div g[clip-path] g + g:nth-child(2) rect').eq(index)
 			             			            .trigger('mouseover', {force: true}).then((obj) => {
 							cy.get('#chart_div svg path ~ g').then((elem) => {
 								var actualLetterAndCount = elem.text().split('count')
