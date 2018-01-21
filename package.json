@@ -1,11 +1,20 @@
 {
-  "name": "Letter counter tests",
+  "name": "Letter-counter-tests",
   "version": "0.1.0",
   "description": "Letter counter tests",
   "main": "hello-world-server.js",
+  "config": {
+    "serverpath": "Task\\UI_Server",
+    "blackbox-path": "./Task/black_box.jar",
+    "input-path": "./Task/DropZone/Input.txt",
+    "CSVs-path": "./Task/UI_Server/CSVs",
+    "results-path": ".\\Task\\UI_Server\\CSVs\\black_box_results.csv"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1",
-    "cypress:open": "cypress open"
+    "start-server": "cd %npm_package_config_serverpath% && node server.js",
+    "test": "node_modules\\.bin\\cypress run",
+    "postci": "start script.vbs set shell = CreateObject(\"WScript.Shell\"):shell.SendKeys \"^C\" & script.vbs",
+    "ci": "start-server-and-test start-server http://localhost:8080 test"	
   },
   "repository": "",
   "keywords": [
@@ -17,6 +26,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "cypress": "^1.4.1"
+    "cypress": "1.4.1",
+    "start-server-and-test": "1.0.0"
   }
 }

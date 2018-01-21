@@ -8,7 +8,7 @@ function drawChart() {
 	$.get("./CSVs/black_box_results.csv", function(csvString){
 
 		var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
-		
+		//arrayData[4][1] = 0
 		var data = new google.visualization.arrayToDataTable(arrayData);
     
 		var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));

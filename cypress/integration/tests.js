@@ -1,60 +1,65 @@
-var pathToResultsFile = '.\\Task\\UI_Server\\CSVs\\black_box_results.csv'
+const pjson = require("./../../package.json")
 
 describe(
 		'Letter counter test suite',
 		function() {
-
-			// Deletes an old backend Results file if needed and executes Black Box program
+            
+			let blackboxResults = ''
+			
+			// Executes Black Box program, reads results and opens home page
 			before(function() {
-				cy.exec('del "' + pathToResultsFile + '"')
-				cy.exec('java -jar "./Task/black_box.jar" "./Task/DropZone/Input.txt" "./Task/UI_Server/CSVs"')
-						.its('stdout').should('contain', 'Number of results')
+				cy.exec('java -jar "' + pjson.config["blackbox-path"] + '" "' + pjson.config["input-path"] + '" "' 
+						+ pjson.config["CSVs-path"] + '"').its('stdout').should('contain', 'Number of results')
+				
+				cy.readFile(pjson.config["results-path"]).then((content) => {
+					blackboxResults = content.split('\n')
+					blackboxResults.splice(0, 1)
+					blackboxResults.splice(blackboxResults.indexOf(''), 1)
+				})
 				cy.visit('http://127.0.0.1:8080/')
 			})
 
-			it('Reads results from Black Box program and verifies if chart is displayed in UI', function() {
-				cy.readFile('./Task/UI_Server/CSVs/black_box_results.csv').then((content) => {
-					var beResults = content.split('\n')
-					beResults.splice(0, 1)
-					beResults.splice(beResults.indexOf(''), 1)
-				    cy.get('g[clip-path] rect[fill = \'#3366cc\']').should('have.length', beResults.length);
-				})
+			// Test remediation
+			after(function() {
+				cy.exec('del "' + pjson.config["results-path"] + '"')
 			})
 			
-			it('Picks random letter from Input.txt and verifies if it\'s count is correct in the chart', function() {
-				cy.readFile('./Task/DropZone/Input.txt').then((content) => {
-	
-					// Pick a random char from Input.txt
-					var char = ' '
-					while (char === ' ') {
-						var randomIndex = Math.floor((Math.random() * content.length) + 1)
-						char = content[randomIndex]
-					}
-					cy.log("[TEST ACTION] Picked letter: " + char)
-
-					// Count of picked letter in Input.txt
-					var charCount = 0
-					for (var i = 0; i < content.length; i++) {
-                        if (content[i] === char) {
-                        	charCount = charCount + 1;
-                        }
-                    }
-					cy.log('[TEST ACTION] Calculated letter count from Input.txt: ' + charCount)
+			it('Verifies if chart displays blackbox program\'s results', function() {
+				cy.get('div[id*=\'google-visualization-errors\']').should('not.exist')
+				cy.get('#chart_div g[clip-path] rect[fill = \'#3366cc\']').should('have.length', blackboxResults.length);
+			})
+			
+			it('Verifies if chart displays random letter\'s count', function() {
+				
+             		// Pick a random char from results
+					var randomIndex = Math.floor((Math.random() * blackboxResults.length) + 1)
+					//randomIndex = 3
+					var expectedLetterAndCount = blackboxResults[randomIndex].split('\",')
+			        var expectedLetter = expectedLetterAndCount[0].replace("\"", "")
+			        var expectedCharCount = expectedLetterAndCount[1]
 					
 					// Get index of picket letter in UI chart
-					var uiLetter = cy.get('text[text-anchor=\'middle\']').contains(char)
-					cy.get('text[text-anchor=\'middle\']').then((allLettersUi) => {
+					var uiLetter = cy.get('text[text-anchor=\'middle\']').contains(expectedLetter)
+					cy.get('#chart_div text[text-anchor=\'middle\']').then((allLettersUi) => {
+						
 						var letters = allLettersUi.text()
 						var index = 0
 						for (var i = 0; i < allLettersUi.length; i++) {
-							if (letters[i] === char) {
+							if (letters[i] === expectedLetter) {
 	                            index = i + 1
 	                        }
 	                    }
-						cy.get('g[clip-path] rect[fill = \'#3366cc\']').eq(index).trigger('mouseover', {force: true}).then((a) => {
-							cy.get('svg g:nth-child(3) text:nth-child(2)').should('have.text', charCount.toString());
-						} )
+
+						cy.get('#chart_div g[clip-path] rect[fill = \'#3366cc\']').eq(index)
+			             			            .trigger('mouseover', {force: true}).then((obj) => {
+							cy.get('#chart_div svg path ~ g').then((elem) => {
+								var actualLetterAndCount = elem.text().split('count')
+				                var actualLetter = actualLetterAndCount[0]
+							    var actualCount = actualLetterAndCount[1].replace(':', '')
+								cy.expect(actualLetter).equals(expectedLetter)
+						        cy.expect(actualCount).equals(expectedCharCount)
+							})
+						})
 					})
-				})
-			})
+			})			    		
 		})
